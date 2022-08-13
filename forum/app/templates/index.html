@@ -3,10 +3,14 @@
     <h2>Welcome!</h2>
     <br>
     <h3>Log in</h3>
-    <form>
-        Username: <input type="text">
+    <p>
+        {{ error }}
+    </p>
+    <form action="/" method="POST">
+        {% csrf_token %}
+        Username: <input type="text" name="username">
         <br>
-        Password: <input type="Password">
+        Password: <input type="Password" name="password">
         <br>
         <input type="submit" value="Log in">
     </form>

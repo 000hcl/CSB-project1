@@ -1,12 +1,40 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .models import User, Topic, Message
 
 
+@csrf_protect
 def index(request):
-    return render(request, 'index.html')
+    error = ""
+    
+    if request.method == "POST":
+        form_username = request.POST['username']
+        form_password = request.POST['password']
+        try:
+            db_user = User.objects.get(username=form_username)
+            
+        except User.DoesNotExist:
+            db_user = None
+            error = "Username or password incorrect."
+        if db_user is not None:
+            db_password = db_user.password
+            if form_password == db_password:
+                request.session['username'] = db_user.username
+                return HttpResponseRedirect("/home/")
+            else:
+                error = "Username or password incorrect."
 
+    return render(request, 'index.html', {'error':error})
+
+
+def home(request):
+    try:
+        username = request.session['username']
+    except:
+        return render(request, 'index.html', {'error': "Please log in first."})
+    topics = Topic.objects.all()
+    return render(request, 'home.html', {'topics':topics, 'username':username})
 @csrf_exempt
 def register(request):
     error = ""
@@ -39,4 +67,4 @@ def register(request):
             User.objects.create(username=form_username, password=form_password)
             return HttpResponseRedirect("/")
 
-    return render(request, 'register.html', {'error':error})
+    return render(request, 'register.html', {'error': error})
