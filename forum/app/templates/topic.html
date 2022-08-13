@@ -2,9 +2,20 @@
 <p>
     {{ topic.text }}
 </p>
-
+<h2>Comments:</h2>
+{% for msg in messages%}
+<p>
+    <h3>{{msg.poster.username}}:</h3>
+    <br>
+    {{ msg.text }}
+</p>
+{% endfor %}
 <h2>Add a comment</h2>
 <br>
-<textarea name="comment">
-    Your comment here
+<form action="/topic/{{ topic.pk }}/" method="POST">
+{%csrf_token%}
+<textarea name="comment" rows="4" cols="50">
 </textarea>
+<br>
+<input type="submit" value="Submit">
+</form>

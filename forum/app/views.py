@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from .models import User, Topic, Message
@@ -46,12 +46,24 @@ def new_topic(request):
         return render(request, 'index.html', {'error': "Please log in first."})
     error=""
     if request.method == "POST":
-        #check lengths
+        #TODO:check lengths
         form_title = request.POST['title']
         form_text = request.POST['body']
         Topic.objects.create(title=form_title, text=form_text, poster=user, visible=True)
         return HttpResponseRedirect('/home/')
     return render(request, 'new_topic.html')
+
+@csrf_protect
+def topic(request, topic_id):
+    #TODO: check inlogged, or don't
+    topic = get_object_or_404(Topic, pk=topic_id)
+    messages = Message.objects.filter(topic=topic)
+    if request.method == "POST":
+        form_text = request.POST['comment']
+        form_poster = User.objects.get(pk=request.session['user'])
+        Message.objects.create(text=form_text, poster=form_poster, topic=topic, visible=True)
+        return HttpResponseRedirect(f"/topic/{topic_id}/")
+    return render(request, 'topic.html', {'topic':topic, 'messages':messages})
 
 @csrf_exempt
 def register(request):
