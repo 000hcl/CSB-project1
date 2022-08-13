@@ -1,3 +1,5 @@
+{% extends "default.html" %}
+{% block content %}
 <h1>Welcome, {{ username }}!</h1>
 <p>
     <h2>Topics</h2>
@@ -6,6 +8,7 @@
         <br>
     {% endfor %}
     <p>
-        <a href="/new_topic"><h3>Start your own topic</hr></a>
+        <a href="/new_topic"><h3>Start your own topic</h3></a>
     </p>
 </p>
+{% endblock %}

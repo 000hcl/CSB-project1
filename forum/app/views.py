@@ -53,6 +53,10 @@ def new_topic(request):
         return HttpResponseRedirect('/home/')
     return render(request, 'new_topic.html')
 
+def logout(request):
+    #should this work?
+    return HttpResponseRedirect("/")
+
 @csrf_protect
 def topic(request, topic_id):
     #TODO: check inlogged, or don't
