@@ -21,6 +21,7 @@ def index(request):
             db_password = db_user.password
             if form_password == db_password:
                 request.session['username'] = db_user.username
+                request.session['user'] = db_user.pk
                 return HttpResponseRedirect("/home/")
             else:
                 error = "Username or password incorrect."
@@ -35,6 +36,23 @@ def home(request):
         return render(request, 'index.html', {'error': "Please log in first."})
     topics = Topic.objects.all()
     return render(request, 'home.html', {'topics':topics, 'username':username})
+
+@csrf_protect
+def new_topic(request):
+    try:
+        userid = request.session['user']
+        user = User.objects.get(pk=userid)
+    except:
+        return render(request, 'index.html', {'error': "Please log in first."})
+    error=""
+    if request.method == "POST":
+        #check lengths
+        form_title = request.POST['title']
+        form_text = request.POST['body']
+        Topic.objects.create(title=form_title, text=form_text, poster=user, visible=True)
+        return HttpResponseRedirect('/home/')
+    return render(request, 'new_topic.html')
+
 @csrf_exempt
 def register(request):
     error = ""

@@ -1,0 +1,14 @@
+<h1>Add a new topic</h1>
+<p>
+    {{ error }}
+</p>
+<form action="/new_topic/" method="POST">
+    {% csrf_token %}
+    Title:
+    <input type="text" name="title">
+    <br>
+    Description:
+    <textarea name="body"></textarea>
+    <br>
+    <input type="submit" value="Create new topic">
+</form>
