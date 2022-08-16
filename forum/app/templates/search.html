@@ -9,7 +9,7 @@ Search:
 </form>
 {% for user in users %}
 <p>
-    {{ user }}
+    {{ user }} <a href="/user/{{ user }}/"> View profile </a>
 </p>
 {% endfor %}
 {% endblock %}

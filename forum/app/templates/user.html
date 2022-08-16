@@ -1,0 +1,19 @@
+{% extends "default.html" %}
+{% block content %}
+
+<h1>{{ username }}</h1>
+{% if user_mod %}
+<h2>Moderator</h2>
+{% else %}
+<h2>User</h2>
+{% endif %}
+Total original posts: {{ posts }}
+<br>
+Total replies: {{ replies }}
+
+<p>
+    {% if moderator %}
+    <a href="/makemoderator/{{ user_id }}/">Make into moderator</a>
+    {% endif %}
+</p>
+{% endblock %}

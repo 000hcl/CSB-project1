@@ -9,5 +9,6 @@ urlpatterns = [
     path('topic/<int:topic_id>/', views.topic, name='topic'),
     path('makemoderator/<int:user_id>/', views.makemoderator, name='make mod'),
     path('logout/', views.logout, name='log out'),
-    path('search/', views.search, name='search')
+    path('search/', views.search, name='search'),
+    path('user/<str:username>/', views.user, name='user')
 ]

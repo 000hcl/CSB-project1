@@ -36,8 +36,19 @@ def index(request):
     return render(request, 'index.html', {'error':error})
 
 def makemoderator(request, user_id):
-    user = User.objects.filter(pk=user_id)
-    user.update(moderator=True)
+    #request.session.clear_expired()
+    try:
+        moderator_status = request.session['moderator']
+    except:
+        response = HttpResponseRedirect("/")
+        #response.delete_cookie('sessionid')
+        return response
+
+
+    #if moderator_status:
+    #    user = User.objects.filter(pk=user_id)
+    #    user.update(moderator=True)
+
     return HttpResponseRedirect("/home/")
 
 @csrf_protect
@@ -53,22 +64,40 @@ def search(request):
         return response
     cursor = connection.cursor()
     sql = "SELECT username FROM app_user WHERE username LIKE '"
-    users = []
+    users_clean = []
     if request.method == "POST":
         query = request.POST['query']
         sql+=query
         sql+= "'"
         cursor.execute(sql)
+        #cursor.execute("SELECT username FROM app_user WHERE username LIKE %s", [query])
         users = cursor.fetchall()
-        
-        users_clean = []
+
         
         for user in users:
             users_clean.append(user[0])
     
     return render(request, 'search.html', {'users':users_clean, 'moderator':moderator_status})
     
+def user(request, username):
+    try:
+        user = User.objects.get(username=username)
+        id = user.id
+        user_mod = user.moderator
+        moderator_status = request.session['moderator']
+        
+        title_count = Topic.objects.filter(poster=user).count()
+        message_count = Message.objects.filter(poster=user).count()
+    except:
+        return HttpResponseRedirect("/home/")
     
+    
+    return render(request, 'user.html', {'username':username,
+                                         'user_id':id,
+                                         'posts':title_count,
+                                         'replies':message_count,
+                                         'user_mod':user_mod, 'moderator':moderator_status})
+        
 
 def home(request):
     #request.session.clear_expired()
