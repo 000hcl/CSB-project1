@@ -1,7 +1,9 @@
+from operator import mod
 from urllib import response
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.db import connection
 from .models import User, Topic, Message
 from datetime import datetime
 
@@ -25,36 +27,72 @@ def index(request):
                 request.session['username'] = db_user.username
                 request.session['user'] = db_user.pk
                 request.session['latest_activity'] = str(datetime.now())
-                request.session.set_expiry(20)
+                request.session['moderator'] = db_user.moderator
+                #request.session.set_expiry(20)
                 return HttpResponseRedirect("/home/")
             else:
                 error = "Username or password incorrect."
 
     return render(request, 'index.html', {'error':error})
 
+def makemoderator(request, user_id):
+    user = User.objects.filter(pk=user_id)
+    user.update(moderator=True)
+    return HttpResponseRedirect("/home/")
 
-def home(request):
-    request.session.clear_expired()
+@csrf_protect
+#injection test query: [n' UNION SELECT password FROM app_user WHERE username LIKE 'sage]
+#returns user sage's password
+def search(request):
+    #request.session.clear_expired()
     try:
-        username = request.session['username']
+        moderator_status = request.session['moderator']
     except:
         response = HttpResponseRedirect("/")
-        response.delete_cookie('sessionid')
+        #response.delete_cookie('sessionid')
+        return response
+    cursor = connection.cursor()
+    sql = "SELECT username FROM app_user WHERE username LIKE '"
+    users = []
+    if request.method == "POST":
+        query = request.POST['query']
+        sql+=query
+        sql+= "'"
+        cursor.execute(sql)
+        users = cursor.fetchall()
+        
+        users_clean = []
+        
+        for user in users:
+            users_clean.append(user[0])
+    
+    return render(request, 'search.html', {'users':users_clean, 'moderator':moderator_status})
+    
+    
+
+def home(request):
+    #request.session.clear_expired()
+    try:
+        username = request.session['username']
+        moderator_status = request.session['moderator']
+    except:
+        response = HttpResponseRedirect("/")
+        #response.delete_cookie('sessionid')
         return response
 
     request.session['latest_activity'] = str(datetime.now())
     topics = Topic.objects.all()
-    return render(request, 'home.html', {'topics':topics, 'username':username})
+    return render(request, 'home.html', {'topics':topics, 'username':username, 'moderator':moderator_status})
 
 @csrf_protect
 def new_topic(request):
-    request.session.clear_expired()
+    #request.session.clear_expired()
     try:
         userid = request.session['user']
         user = User.objects.get(pk=userid)
     except:
         response = HttpResponseRedirect("/")
-        response.delete_cookie('sessionid')
+        #response.delete_cookie('sessionid')
         return response
     error=""
     request.session['latest_activity'] = str(datetime.now())
@@ -72,12 +110,12 @@ def logout(request):
 
 @csrf_protect
 def topic(request, topic_id):
-    request.session.clear_expired()
+    #request.session.clear_expired()
     try:
         user_id = request.session['user']
     except:
         response = HttpResponseRedirect("/")
-        response.delete_cookie('sessionid')
+        #response.delete_cookie('sessionid')
         return response
     request.session['latest_activity'] = str(datetime.now())
     

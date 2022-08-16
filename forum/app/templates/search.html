@@ -1,0 +1,15 @@
+{% extends "default.html" %}
+{% block content %}
+<h1>Search users</h1>
+Search:
+<form action="/search/" method="POST">
+    {% csrf_token %}
+    <input type="text" name="query">
+    <input type="submit" name="Search">
+</form>
+{% for user in users %}
+<p>
+    {{ user }}
+</p>
+{% endfor %}
+{% endblock %}

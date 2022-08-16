@@ -1,6 +1,9 @@
 {% extends "default.html" %}
 {% block content %}
 <h1>Welcome, {{ username }}!</h1>
+{% if moderator %}
+You are a moderator.
+{% endif %}
 <p>
     <h2>Topics</h2>
     {% for topic in topics %}
