@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.db import connection
 from .models import User, Topic, Message
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @csrf_protect
@@ -23,6 +24,7 @@ def index(request):
             error = "Username or password incorrect."
         if db_user is not None:
             db_password = db_user.password
+            #if check_password_hash(db_password, form_password):
             if form_password == db_password:
                 request.session['username'] = db_user.username
                 request.session['user'] = db_user.pk
@@ -186,6 +188,7 @@ def register(request):
             error += "ERROR: Username is taken. "
         
         if error == "":
+            #form_password = generate_password_hash(form_password)
             User.objects.create(username=form_username, password=form_password)
             return HttpResponseRedirect("/")
 
