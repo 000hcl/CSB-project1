@@ -5,7 +5,7 @@
 <p>
     {{ error }}
 </p>
-<form action="/new_topic/" method="POST">
+<form method="POST">
     {% csrf_token %}
     Title:
     <input type="text" name="title">

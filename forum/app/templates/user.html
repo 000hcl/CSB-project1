@@ -13,7 +13,7 @@ Total replies: {{ replies }}
 
 <p>
     {% if moderator %}
-    <a href="/makemoderator/{{ user_id }}/">Make into moderator</a>
+    <form action="/makemoderator/{{ user_id }}/" method="POST">{% csrf_token%}<input type="submit" value="Make moderator"></form>
     {% endif %}
 </p>
 {% endblock %}

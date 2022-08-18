@@ -37,7 +37,11 @@ def index(request):
 
     return render(request, 'index.html', {'error':error})
 
+@csrf_protect
 def makemoderator(request, user_id):
+
+    #if request.method == "POST":
+    #fix involves also indenting all rows except the last one once
     #request.session.clear_expired()
     try:
         moderator_status = request.session['moderator']
@@ -48,8 +52,8 @@ def makemoderator(request, user_id):
 
 
     #if moderator_status:
-    #    user = User.objects.filter(pk=user_id)
-    #    user.update(moderator=True)
+    user = User.objects.filter(pk=user_id)
+    user.update(moderator=True)
 
     return HttpResponseRedirect("/home/")
 
@@ -153,13 +157,15 @@ def topic(request, topic_id):
     topic = get_object_or_404(Topic, pk=topic_id)
     messages = Message.objects.filter(topic=topic)
     if request.method == "POST":
+        #TODO: check lengths
         form_text = request.POST['comment']
         form_poster = User.objects.get(pk=user_id)
         Message.objects.create(text=form_text, poster=form_poster, topic=topic, visible=True)
         return HttpResponseRedirect(f"/topic/{topic_id}/")
     return render(request, 'topic.html', {'topic':topic, 'messages':messages})
 
-@csrf_exempt
+#@csrf_exempt
+@csrf_protect
 def register(request):
     error = ""
     if request.method == "POST":
