@@ -196,7 +196,7 @@ def register(request):
         if len(form_username) == 0:
             error += "No username was given. "
         
-        if len(form_username) > 20:
+        if len(form_username) > 64:
             error += "ERROR: Username is too long."
         
         if len(form_password) > 20:
