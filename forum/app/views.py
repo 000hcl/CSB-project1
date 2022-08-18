@@ -9,7 +9,8 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-@csrf_protect
+#@csrf_protect
+@csrf_exempt
 def index(request):
     error = ""
     
@@ -37,7 +38,8 @@ def index(request):
 
     return render(request, 'index.html', {'error':error})
 
-@csrf_protect
+#@csrf_protect
+@csrf_exempt
 def makemoderator(request, user_id):
 
     #if request.method == "POST":
@@ -57,9 +59,10 @@ def makemoderator(request, user_id):
 
     return HttpResponseRedirect("/home/")
 
-@csrf_protect
-#injection test query: [n' UNION SELECT password FROM app_user WHERE username LIKE 'sage]
-#returns user sage's password
+#@csrf_protect
+#injection test example: [n' UNION SELECT password FROM app_user WHERE username LIKE 'username]
+#returns user username's password
+@csrf_exempt
 def search(request):
     #request.session.clear_expired()
     try:
@@ -84,7 +87,8 @@ def search(request):
             users_clean.append(user[0])
     
     return render(request, 'search.html', {'users':users_clean, 'moderator':moderator_status})
-    
+
+@csrf_exempt
 def user(request, username):
     try:
         user = User.objects.get(username=username)
@@ -104,7 +108,7 @@ def user(request, username):
                                          'replies':message_count,
                                          'user_mod':user_mod, 'moderator':moderator_status})
         
-
+@csrf_exempt
 def home(request):
     #request.session.clear_expired()
     try:
@@ -119,7 +123,8 @@ def home(request):
     topics = Topic.objects.all()
     return render(request, 'home.html', {'topics':topics, 'username':username, 'moderator':moderator_status})
 
-@csrf_protect
+#@csrf_protect
+@csrf_exempt
 def new_topic(request):
     #request.session.clear_expired()
     try:
@@ -143,7 +148,8 @@ def logout(request):
     request.session.flush()
     return HttpResponseRedirect("/")
 
-@csrf_protect
+#@csrf_protect
+@csrf_exempt
 def topic(request, topic_id):
     #request.session.clear_expired()
     try:
@@ -164,8 +170,8 @@ def topic(request, topic_id):
         return HttpResponseRedirect(f"/topic/{topic_id}/")
     return render(request, 'topic.html', {'topic':topic, 'messages':messages})
 
-#@csrf_exempt
-@csrf_protect
+@csrf_exempt
+#@csrf_protect
 def register(request):
     error = ""
     if request.method == "POST":
