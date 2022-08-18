@@ -137,9 +137,12 @@ def new_topic(request):
     error=""
     request.session['latest_activity'] = str(datetime.now())
     if request.method == "POST":
-        #TODO:check lengths
         form_title = request.POST['title']
         form_text = request.POST['body']
+        if len(form_text)==0 or len(form_title)==0:
+            return HttpResponse("Missing title or text")
+        if len(form_text)>1000 or len(form_title)>100:
+            return HttpResponse("Title or text too long.")
         Topic.objects.create(title=form_title, text=form_text, poster=user, visible=True)
         return HttpResponseRedirect('/home/')
     return render(request, 'new_topic.html')
@@ -163,8 +166,11 @@ def topic(request, topic_id):
     topic = get_object_or_404(Topic, pk=topic_id)
     messages = Message.objects.filter(topic=topic)
     if request.method == "POST":
-        #TODO: check lengths
         form_text = request.POST['comment']
+        if len(form_text)==0:
+            return HttpResponse("Please write a comment.")
+        if len(form_text)>1000:
+            return HttpResponse("Your comment is too long.")
         form_poster = User.objects.get(pk=user_id)
         Message.objects.create(text=form_text, poster=form_poster, topic=topic, visible=True)
         return HttpResponseRedirect(f"/topic/{topic_id}/")
