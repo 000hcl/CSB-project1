@@ -61,8 +61,8 @@ def makemoderator(request, user_id):
     return HttpResponseRedirect("/home/")
 
 #@csrf_protect
-#injection test example: [n' UNION SELECT password FROM app_user WHERE username LIKE 'username]
-#returns user username's password
+#injection test example: [n' UNION SELECT password FROM app_user WHERE username LIKE 'sage]
+#returns user sage's password
 @csrf_exempt
 def search(request):
     #request.session.clear_expired()
