@@ -87,6 +87,7 @@ def search(request):
     
     return render(request, 'search.html', {'users':users_clean, 'moderator':moderator_status})
 
+#@csrf_protect
 @csrf_exempt
 def user(request, username):
     try:
@@ -106,7 +107,8 @@ def user(request, username):
                                          'posts':title_count,
                                          'replies':message_count,
                                          'user_mod':user_mod, 'moderator':moderator_status})
-        
+
+#@csrf_protect       
 @csrf_exempt
 def home(request):
     #request.session.clear_expired()
