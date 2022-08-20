@@ -50,7 +50,7 @@ def makemoderator(request, user_id):
         response = HttpResponseRedirect("/")
         #response.delete_cookie('sessionid')
         return response
-
+    request.session['latest_activity'] = str(datetime.now())
 
     #if moderator_status:
     user = User.objects.filter(pk=user_id)
@@ -84,7 +84,7 @@ def search(request):
         
         for user in users:
             users_clean.append(user[0])
-    
+    request.session['latest_activity'] = str(datetime.now())
     return render(request, 'search.html', {'users':users_clean, 'moderator':moderator_status})
 
 #@csrf_protect
@@ -101,7 +101,7 @@ def user(request, username):
     except:
         return HttpResponseRedirect("/home/")
     
-    
+    request.session['latest_activity'] = str(datetime.now())
     return render(request, 'user.html', {'username':username,
                                          'user_id':id,
                                          'posts':title_count,
