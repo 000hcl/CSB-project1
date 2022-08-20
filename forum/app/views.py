@@ -1,13 +1,11 @@
-from operator import mod
-from urllib import response
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.db import connection
 from .models import User, Topic, Message
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-import pwnedpasswords
+#from werkzeug.security import generate_password_hash, check_password_hash
+#import pwnedpasswords
 
 
 #@csrf_protect
