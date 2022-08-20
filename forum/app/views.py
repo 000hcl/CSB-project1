@@ -7,6 +7,7 @@ from django.db import connection
 from .models import User, Topic, Message
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+import pwnedpasswords
 
 
 #@csrf_protect
@@ -190,17 +191,20 @@ def register(request):
         if form_password != confirm_password:
             error += "ERROR: Passwords don't match. "
         
-        if len(form_password) == 0:
-            error += "ERROR: No password was given. "
+        if len(form_password) < 8:
+            error += "ERROR: Password too short. "
         
         if len(form_username) == 0:
             error += "No username was given. "
         
-        if len(form_username) > 64:
+        if len(form_username) > 20:
             error += "ERROR: Username is too long."
         
-        if len(form_password) > 20:
+        if len(form_password) > 64:
             error += "ERROR: Password is too long. "
+        
+        #if pwnedpasswords.check(form_password, plain_text=True) >0:
+        #    error += "ERROR: The password is compromised, please use another."
         
         if (db_user >0):
             error += "ERROR: Username is taken. "
